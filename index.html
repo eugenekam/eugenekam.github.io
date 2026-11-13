@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Eugene Kam, an aspiring analyst in motorsport</title>
+  <meta name="description" content="Eugene Kam finds where systems lose time. Click through his career on the real Marina Bay circuit, take a race car apart, and see a real qualifying lap broken down.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Eugene Kam, an aspiring analyst in motorsport">
+  <meta property="og:description" content="Eugene Kam finds where systems lose time. Click through his career on the real Marina Bay circuit, take a race car apart, and see a real qualifying lap broken down.">
+  <meta property="og:site_name" content="Eugene Kam">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Eugene Kam, an aspiring analyst in motorsport">
+  <meta name="twitter:description" content="Eugene Kam finds where systems lose time. Click through his career on the real Marina Bay circuit, take a race car apart, and see a real qualifying lap broken down.">
+  <meta name="theme-color" content="#ffd60a">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23ffd60a'/%3E%3Cpath d='M9 7h4v8l6-8h4l-6 8 7 10h-5l-6-8v8H9z' fill='%230b0c0e'/%3E%3C/svg%3E">
+  <script>document.documentElement.classList.add('js')</script>
+  <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+  <canvas id="scene" aria-hidden="true"></canvas>
+  <img class="poster" id="poster" src="/img/hero.jpg" width="1404" height="1752" fetchpriority="high" alt="A yellow and black race car on the Esplanade Bridge at night, with Marina Bay Sands and its reflection across the water behind it">
+
+  <header class="board" id="menu">
+    <div class="board__title">
+      <h1 class="title">
+        <span class="title__name">Eugene Kam</span>
+        <span class="title__does">“Strat Two” for analytics-focused role</span>
+      </h1>
+    </div>
+    <nav class="menu" id="menu-list" aria-label="Main menu">
+      <a class="menu__item" href="#/profile" data-view="cockpit"><span class="menu__name">Profile</span><span class="menu__note">Who Eugene is and where he’s heading</span></a>
+      <a class="menu__item" href="#/career" data-view="rise"><span class="menu__name">Career</span><span class="menu__note">Six stints, one lap. Click through the CV</span></a>
+      <a class="menu__item" href="#/pitwall" data-view="behind"><span class="menu__name">Pit Wall</span><span class="menu__note">Where 0.054 seconds went, taken apart</span></a>
+      <a class="menu__item" href="#/garage" data-view="garage"><span class="menu__name">Garage</span><span class="menu__note">Spin the car and pull it apart</span></a>
+      <a class="menu__item" href="#/radio" data-view="console"><span class="menu__name">Team Radio</span><span class="menu__note">Get in touch with Eugene</span></a>
+    </nav>
+    <p class="board__foot"><a href="#/cv">Just the CV</a><span class="prompts prompts--menu"><span><kbd>↑</kbd><kbd>↓</kbd> Select</span><span><kbd>Enter</kbd> Open</span></span><button type="button" data-motion hidden>Full motion</button></p>
+  </header>
+
+  <div class="bar" id="bar" hidden>
+    <a class="bar__back" href="#/">Menu</a>
+    <span class="bar__title" id="bar-title"></span>
+    <span class="bar__tools">
+      <button type="button" id="sound" aria-pressed="false">Sound off</button>
+      <button type="button" data-motion hidden>Full motion</button>
+      <a href="#/cv">CV</a>
+    </span>
+  </div>
+
+  <div id="mode"></div>
+  <p class="prompts prompts--mode" id="prompts" hidden></p>
+  <div class="wipe" id="wipe" aria-hidden="true"><span></span></div>
+  <div class="blink" id="blink" aria-hidden="true"></div>
+
+  <main class="cv" id="cv" tabindex="-1">
+    <a class="cv__close" href="#/">Back</a>
+
+    <section aria-labelledby="letter-h">
+      <a class="button-link button-link--main cv__resume" href="Eugene_Kam_Resume.pdf" target="_blank" rel="noopener">View resume (PDF)</a>
+      <h2 class="head" id="letter-h">An aspiring analyst in motorsport</h2>
+      <dl class="strip">
+        <div><dt>vessels in one database</dt><dd>1,000+</dd></div>
+        <div><dt>resolution accuracy</dt><dd>95%+</dd></div>
+        <div><dt>est. digital assets protected</dt><dd>USD 250k</dd></div>
+        <div><dt>delivery loads a week</dt><dd>20</dd></div>
+      </dl>
+      <div class="cv__text">
+        <p>I’m Eugene, an aspiring analyst in the realm of motorsport, with an interest in the entire path from a messy dataset to a useful decision.</p>
+        <p>I’m not a Formula 1 analyst yet, and I won’t pretend to be. What I have done since 2020 is the job underneath it: take a system that’s supposed to be working, find where it’s losing time or money, and prove it with the data.</p>
+        <p>At 5CA that meant lining up backend databases, behavioural logs, timestamps and geolocation until a fraudulent claim had nowhere left to stand. At SeaQuest it meant more than 1,000 vessels in one clean database, kept current every month. At Rectitude it means about 20 delivery loads a week, sequenced without direct supervision.</p>
+        <p>I hold AWS Cloud Practitioner and Google Project Management certifications, and I’ve trained in the basics of SQL and Python through AWS re/Start. I know they’re basics. The Pit Wall on this site takes a real qualifying lap apart, and that’s the work I’m building towards.</p>
+        <p class="sign">Eugene Kam<span>Singapore</span></p>
+      </div>
+      <figure class="pair">
+        <img src="/img/sepang.jpg" width="960" height="1200" loading="lazy" decoding="async" alt="Sepang International Circuit seen from a plane, its two long straights curling round the grandstands">
+        <img src="/img/marina-bay.jpg" width="1600" height="1068" loading="lazy" decoding="async" alt="The 2012 Singapore Grand Prix at night from above, the lit circuit running past the Padang towards Marina Bay Sands">
+        <figcaption>Sepang, near Kuala Lumpur, and the Marina Bay street circuit, Singapore.</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="work-h">
+      <h2 class="head" id="work-h">The lap</h2>
+
+      <h3 class="sector">Sector one, Kuala Lumpur</h3>
+      <article class="stint" id="seaquest" data-tag="SeaQuest" data-at="150" data-sector="1" data-angle="0.3" data-why="Clean history, a forecast, and a call on risk before it happens. That’s strategy work.">
+        <h4>SeaQuest Intermediaries</h4>
+        <p class="stint__role">Marine Insurance Data Administrator/Analyst, June 2020 to January 2022, Malaysia</p>
+        <dl class="numbers">
+          <div><dt>vessels in one new database</dt><dd>1,000+</dd></div>
+        </dl>
+        <p>I pulled vessel records from an international pool of historical data into a new Excel database, so the firm could forecast insurability through a risk-averse lens, and I kept it current every month, region by region.</p>
+        <p>I also ran the flow of financial records, ensuring regulatory standard.</p>
+        <figure class="shot"><img src="/img/vessel.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="A container ship being worked through the night under floodlights and cranes"></figure>
+      </article>
+
+      <h3 class="sector">Sector two, under pressure</h3>
+      <article class="stint" id="5ca" data-tag="5CA" data-at="210" data-sector="2" data-angle="-0.35" data-case="true" data-why="Four sources, one answer, and a queue that doesn’t wait. That’s a race.">
+        <h4>5CA</h4>
+        <p class="stint__role">Customer Support Specialist, October 2023 to October 2024, Malaysia</p>
+        <dl class="numbers">
+          <div><dt>surge in tickets, peak holiday season</dt><dd>10×</dd></div>
+          <div><dt>resolution accuracy</dt><dd>95%+</dd></div>
+          <div><dt>SLA compliance</dt><dd>98%+</dd></div>
+          <div><dt>first response, live chat</dt><dd>Under 1 min</dd></div>
+          <div><dt>first response, tickets</dt><dd>Under 4 hrs</dd></div>
+          <div><dt>faster responses for Mandarin-speaking users</dt><dd>20%</dd></div>
+          <div><dt>faster escalations</dt><dd>30%</dd></div>
+        </dl>
+        <p>Player support in English and Mandarin on a top-2 global gaming platform. Peak holiday season brought a 10× surge in tickets, and the numbers held.</p>
+        <p>The part I enjoy the most was the backend analysis part. All the cross-referencing backend databases, behavioural logs, timestamps and geolocation stopped fraudulent pay-outs and helped protect an estimated USD 250k in digital assets.</p>
+        <p>I also spotted recurring bugs and case patterns in Zendesk and Salesforce histories and escalated them with clear details, cutting escalation time by about 30%.</p>
+      </article>
+
+      <article class="stint" id="tester" data-tag="Game tester" data-at="303" data-sector="2" data-angle="0.55" data-why="Find what’s wrong, then write it up so someone can act on it.">
+        <h4>GameTester.gg, Lionbridge</h4>
+        <p class="stint__role">Freelance game tester</p>
+        <p>Tested the gaming experience of shipped games and documented its defects.</p>
+      </article>
+
+      <h3 class="sector">Sector three, building</h3>
+      <article class="stint" id="papayen" data-tag="Papayen" data-at="360" data-sector="3" data-angle="-0.45" data-why="Development only counts when it shows up in the numbers.">
+        <h4>Papayen Ice Cream &amp; Dessert</h4>
+        <p class="stint__role">Operations &amp; Growth Strategist, December 2024 to December 2025, Greater Kuala Lumpur</p>
+        <dl class="numbers">
+          <div><dt>of daily sales revenue from the flagship</dt><dd>70%</dd></div>
+          <div><dt>of monthly revenue from returning customers</dt><dd>35%</dd></div>
+        </dl>
+        <p>On the founding R&amp;D team I co-developed a proprietary ice cream base built around locally sourced, premium-grade bird’s nest, made for mainstream tastes and as a healthier dessert. It became the brand’s primary revenue driver.</p>
+        <p>I also handled customer feedback and complaints and turned them into menu improvements, and I diagnosed and fixed a recurring POS printing fault by aligning the front- and back-kitchen printer settings, so orders stayed accurate at peak hours.</p>
+      </article>
+
+      <article class="stint" id="vitals" data-tag="VitalsOfficial" data-at="432" data-sector="3" data-angle="0.4" data-why="A launch is a deadline that can’t move.">
+        <h4>VitalsOfficial</h4>
+        <p class="stint__role">Startup launch</p>
+        <dl class="numbers"><div><dt>of launch inventory sold within two months</dt><dd>50%</dd></div></dl>
+        <p>Sold out half of the launch inventory within two months.</p>
+      </article>
+
+      <article class="stint" id="rectitude" data-tag="Rectitude" data-at="478" data-sector="3" data-angle="-0.3" data-why="Twenty loads a week is a plan that can’t slip. So is a race weekend.">
+        <h4>Rectitude Pte Ltd</h4>
+        <p class="stint__role">Sales and Operations Coordinator, June 2026 to now, Singapore</p>
+        <dl class="numbers">
+          <div><dt>delivery loads a week</dt><dd>20</dd></div>
+          <div><dt>retail outlets, one coordinator</dt><dd>4</dd></div>
+          <div><dt>active client accounts</dt><dd>10</dd></div>
+          <div><dt>average monthly sales supported</dt><dd>SGD 50,000</dd></div>
+        </dl>
+        <p>I’m the sole coordination point between the main office and four retail outlets across the island, managing procurement and distribution of pavements and cement, sourced locally and from a neighbouring country. Loads run inbound and outbound between two primary suppliers and multiple clients, sequenced without direct supervision.</p>
+        <p>Orders run through AutoCount, and the paperwork is audit-ready with clear authorisation trails, aligned to the reporting standards of a NASDAQ-listed company, and I unified item codes across the system so the inventory figures stayed accurate.</p>
+        <figure class="shot"><img src="/img/street.jpg" width="1200" height="800" loading="lazy" decoding="async" alt="A Singapore taxi driving the street circuit at night, days before the 2008 race, catch fencing along the kerb"></figure>
+      </article>
+    </section>
+
+    <section aria-labelledby="spec-h">
+      <h2 class="head" id="spec-h">The spec</h2>
+      <table class="table table--spec">
+        <caption class="sr">Eugene’s certifications, tools and languages</caption>
+        <tbody>
+          <tr><th scope="row">Certified</th><td>AWS Certified Cloud Practitioner<br>Google Project Management: Specialization</td></tr>
+          <tr><th scope="row">Trained</th><td>SQL and Python basics, AWS re/Start</td></tr>
+          <tr><th scope="row">Tools</th><td>Excel databases, AutoCount, POS systems</td></tr>
+          <tr><th scope="row">Disciplines</th><td>Procurement, sales operations, data administration, investigations, project coordination</td></tr>
+          <tr><th scope="row">Languages</th><td>English, Mandarin, Malay and Cantonese</td></tr>
+          <tr><th scope="row">Currently in</th><td>Singapore</td></tr>
+          <tr><th scope="row">Schooled</th><td>Methodist Boys’ Secondary School, Kuala Lumpur</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section aria-labelledby="contact-h">
+      <h2 class="head" id="contact-h">Box, box</h2>
+      <p>Got a seat on the pit wall? Tell me about the role.</p>
+      <ul class="reach">
+        <li><a href="mailto:eugenekkh@gmail.com">eugenekkh@gmail.com</a></li>
+        <li><a href="https://www.linkedin.com/in/justeugene" rel="noopener">linkedin.com/in/justeugene</a></li>
+      </ul>
+    </section>
+
+    <footer class="credits">
+      <p>Telemetry and timing from <a href="https://openf1.org/" rel="noopener">OpenF1</a>, Corner positions from <a href="https://multiviewer.app/" rel="noopener">MultiViewer</a>.</p>
+      <p>An independent personal portfolio, not affiliated with Formula 1, the FIA or any team.</p>
+    </footer>
+  </main>
+</body>
+</html>

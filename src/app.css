@@ -1,0 +1,508 @@
+/* The interactive shell. Nothing here applies until the script has said it's running, so without one
+   the page is simply the title, the menu and the CV. */
+
+.board { padding: var(--pad); background: var(--accent); color: var(--accent-ink); }
+.title { font-weight: 400; }
+.title__name {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--step-display);
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.title__does {
+  display: block;
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-size: clamp(2.125rem, 1.2rem + 2.6vw, 3.75rem);
+  line-height: 1;
+}
+.board .lead { margin-top: 16px; max-width: 26rem; font-size: var(--step-body); }
+.menu { margin-top: 24px; display: grid; }
+.menu__item { display: block; text-decoration: none; }
+.menu__name { font-family: var(--font-display); font-size: var(--step-head); line-height: 1.02; }
+.menu__note { display: block; font-size: var(--step-small); }
+.board__foot { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; font-size: var(--step-small); font-weight: 500; }
+.board__foot button { min-height: 40px; padding: 0 12px; border: 0; background: var(--accent-ink); color: var(--accent); font-weight: 500; cursor: pointer; }
+.board__foot button[hidden] { display: none; }
+.board__foot a { text-underline-offset: 0.25em; }
+
+.poster, #scene, #mode, .bar, .wipe { display: none; }
+
+html.js body { overflow: hidden; height: 100svh; }
+html.js #scene {
+  display: block;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100svh;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  touch-action: none;
+}
+html.js.is-live #scene { opacity: 1; }
+html.js .poster {
+  display: block;
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: 62vw;
+  height: 100svh;
+  object-fit: cover;
+  object-position: 50% 62%;
+}
+html.js.is-live .poster { visibility: hidden; transition: visibility 0s 800ms; }
+
+/* The main menu: the pit board, full height down the left. */
+html.js { --board: clamp(380px, 38vw, 620px); }
+html.js .board {
+  position: fixed;
+  z-index: 5;
+  inset: 0 auto 0 0;
+  width: var(--board);
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  transition: transform 620ms var(--ease-expo);
+}
+html.js .board.is-away { transform: translateX(-101%); }
+html.js .menu { flex: 1; align-content: center; gap: 2px; margin-top: 12px; }
+html.js .menu__item {
+  position: relative;
+  padding: 7px 16px 8px;
+  margin-inline: -16px;
+  transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-ui) var(--ease-out);
+}
+html.js .menu__name { font-size: clamp(2.5rem, 1.6rem + 2.7vw, 4.25rem); display: block; }
+html.js .menu__note { max-height: 0; overflow: hidden; opacity: 0; transition: max-height var(--t-ui) var(--ease-out), opacity var(--t-ui) ease; }
+html.js .menu__item.is-on, html.js .menu__item:focus-visible { background: var(--accent-ink); color: var(--accent); outline: 0; }
+html.js .menu__item.is-on .menu__note, html.js .menu__item:focus-visible .menu__note { max-height: 2.6em; opacity: 1; }
+html.js .menu__item:active { transform: scale(0.985); }
+
+/* The bar along the top of every mode. */
+html.js .bar:not([hidden]) {
+  position: fixed;
+  z-index: 6;
+  inset: 0 0 auto 0;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 16px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.bar a, .bar button {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 12px;
+  border: 0;
+  background: none;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--t-hover) ease, color var(--t-hover) ease;
+}
+.bar__back { background: var(--accent-ink) !important; color: var(--accent); }
+.bar__title { font-family: var(--font-display); font-size: 1.75rem; line-height: 1; text-transform: uppercase; }
+.bar__tools { display: flex; align-items: center; gap: 2px; }
+.bar button[hidden] { display: none; }
+
+html.js { --bar: 52px; --draft: 0px; }
+html.js #mode { display: block; position: fixed; z-index: 4; inset: calc(var(--bar) + var(--draft)) 0 0 0; pointer-events: none; }
+#mode > * { position: absolute; inset: 0; }
+#mode a, #mode button, #mode input, #mode label, #mode .card, #mode .tower, #mode .drag { pointer-events: auto; }
+
+/* The wipe: the pit board crosses the screen with the name of where you're going. */
+html.js .wipe {
+  display: grid;
+  place-items: center;
+  position: fixed;
+  z-index: 8;
+  inset: 0;
+  background: var(--accent);
+  color: var(--accent-ink);
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none;
+}
+.wipe span { font-family: var(--font-display); font-size: clamp(4rem, 13vw, 13rem); line-height: 1; text-transform: uppercase; opacity: 0; transform: translateX(-28px); transition: opacity 240ms ease 120ms, transform 620ms var(--ease-expo) 80ms; }
+.wipe.is-in { clip-path: inset(0); transition: clip-path 440ms var(--ease-in-out); }
+.wipe.is-in span { opacity: 1; transform: none; }
+.wipe.is-out { clip-path: inset(0 0 0 100%); transition: clip-path 500ms var(--ease-in-out); }
+.wipe.is-out span { opacity: 0; transition: opacity 160ms ease; }
+.wipe.is-quick { clip-path: inset(0); transition: none; }
+
+/* Cards: everything you read arrives on one of these, and moves with what you do. */
+.card {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  max-height: calc(100% - 24px);
+  width: min(460px, calc(100vw - 24px));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 24px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  background: var(--bg);
+  color: var(--ink);
+  transform: translateX(24px);
+  opacity: 0;
+}
+.card.is-in { transform: none; opacity: 1; transition: transform 560ms var(--ease-expo), opacity 240ms ease; }
+.card.is-in > * { animation: card-part 520ms var(--ease-expo) both; }
+.card.is-in > *:nth-child(2) { animation-delay: 50ms; }
+.card.is-in > *:nth-child(3) { animation-delay: 90ms; }
+.card.is-in > *:nth-child(4) { animation-delay: 130ms; }
+.card.is-in > *:nth-child(n + 5) { animation-delay: 170ms; }
+@keyframes card-part { from { opacity: 0; transform: translateY(14px); } }
+
+.card__round { font-size: var(--step-small); color: var(--accent); font-weight: 500; }
+.card__name { font-family: var(--font-display); font-size: clamp(2.5rem, 1.7rem + 2.4vw, 4rem); font-weight: 400; line-height: 0.96; letter-spacing: -0.01em; }
+.card__ask { font-family: var(--font-display); font-size: clamp(1.875rem, 1.4rem + 1.6vw, 2.75rem); font-weight: 400; line-height: 1.02; }
+.card__role { font-size: var(--step-small); color: var(--muted); }
+.card__hero { display: grid; gap: 2px; }
+.card__figure { font-family: var(--font-display); font-size: clamp(4.5rem, 3rem + 5vw, 7.5rem); line-height: 0.9; color: var(--accent); font-variant-numeric: tabular-nums; }
+.card__numbers { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+.card__numbers div { padding: 10px 12px; background: var(--surface); }
+.card__numbers dd { font-family: var(--font-display); font-size: 1.75rem; line-height: 1; color: var(--accent); }
+.card__numbers dt { margin-top: 4px; font-size: var(--step-small); line-height: 1.3; }
+.card__picture { width: 100%; aspect-ratio: 2 / 1; object-fit: cover; }
+.tabs { display: flex; flex-wrap: wrap; gap: 2px; }
+.tabs button { min-height: 40px; padding: 0 12px; border: 0; background: var(--surface); color: var(--ink); font-size: 0.9375rem; font-weight: 500; cursor: pointer; transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-press) var(--ease-out); }
+.tabs button:active { transform: scale(0.97); }
+.tabs button[aria-selected='true'] { background: var(--accent); color: var(--accent-ink); }
+.pane { display: grid; gap: 12px; }
+.pane[hidden] { display: none; }
+.pane.is-new { animation: card-part 420ms var(--ease-expo) both; }
+.card__why { padding: 12px 14px; background: var(--accent); color: var(--accent-ink); font-weight: 500; }
+.card__sub { font-family: var(--font-display); font-size: 1.875rem; font-weight: 400; line-height: 1; }
+.card__note { font-size: var(--step-small); color: var(--muted); }
+.card__best { font-weight: 500; }
+.card__keys { font-size: var(--step-small); color: var(--muted); }
+.card__nav { position: sticky; bottom: -24px; display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: -24px; padding-block: 8px 24px; background: var(--bg); }
+.card__nav[hidden] { display: none; }
+.card__nav button, .button-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-press) var(--ease-out);
+}
+.card__nav button:active, .button-link:active { transform: scale(0.97); }
+.card__nav [data-go='1'], .button-link--main { background: var(--accent); color: var(--accent-ink); }
+.button-link--main { justify-self: start; }
+
+/* The small investigation inside the 5CA card. */
+.case { display: grid; gap: 8px; padding: 12px; background: var(--surface); }
+.case__ask { font-weight: 500; }
+.case__sources { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.case button { min-height: 44px; padding: 0 10px; border: 0; background: var(--bg); color: var(--ink); cursor: pointer; transition: background-color var(--t-hover) ease, color var(--t-hover) ease; }
+.case button[aria-pressed='true'] { background: var(--accent); color: var(--accent-ink); font-weight: 500; }
+.case__result { font-size: var(--step-small); min-height: 2.6em; }
+.case.is-closed .case__result { color: var(--accent); font-weight: 500; }
+
+/* The key prompts along the bottom of a screen, as on a console. */
+.prompts { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; font-size: var(--step-small); }
+.prompts span { display: inline-flex; align-items: center; gap: 4px; }
+kbd { min-width: 24px; height: 24px; display: inline-grid; place-items: center; padding: 0 6px; background: var(--bg); color: var(--ink); font-family: var(--font-text); font-size: 0.8125rem; font-weight: 600; }
+.prompts--menu kbd { background: var(--accent-ink); color: var(--accent); }
+html.js .prompts--mode:not([hidden]) { position: fixed; z-index: 5; left: 12px; bottom: 12px; padding: 6px 10px; background: var(--bg); color: var(--ink); }
+.prompts--mode kbd { background: var(--surface); }
+.prompts--mode[hidden] { display: none; }
+@media (hover: none) { .prompts { display: none !important; } }
+
+/* Profile. */
+.facts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; }
+.facts div { padding: 8px 10px; background: var(--surface); }
+.facts dt { font-size: var(--step-small); color: var(--muted); }
+.facts dd { font-family: var(--font-display); font-size: 1.5rem; line-height: 1.05; }
+.jumps { display: grid; gap: 2px; }
+.jumps a { display: grid; grid-template-columns: 5.5rem 1fr; align-items: center; gap: 12px; min-height: 52px; padding: 6px 12px; background: var(--surface); text-decoration: none; transition: background-color var(--t-hover) ease, transform var(--t-ui) var(--ease-out); }
+.jumps strong { font-family: var(--font-display); font-size: 1.875rem; font-weight: 400; line-height: 1; color: var(--accent); }
+.jumps span { font-size: var(--step-small); }
+
+/* Career: the tower, the map and the pins. */
+.tower {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 210px;
+  display: grid;
+  gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.tower a { display: flex; align-items: center; justify-content: space-between; min-height: 36px; padding: 0 12px; background: var(--bg); color: var(--ink); text-decoration: none; font-size: 0.9375rem; transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-ui) var(--ease-out); }
+.tower a span + span { color: var(--muted); font-size: 0.8125rem; }
+.tower a.is-seen::before { content: ''; width: 6px; height: 6px; margin-right: -4px; background: var(--accent); flex: none; order: -1; }
+.tower a span:first-of-type { flex: 1; margin-left: 10px; }
+.tower a.is-on { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
+.tower a.is-on span + span { color: var(--accent-ink); }
+.tower__next { background: var(--surface) !important; }
+
+.pins { position: absolute; inset: calc((var(--bar) + var(--draft)) * -1) 0 0 0; pointer-events: none; }
+.pin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: -16px 0 0 -16px;
+  text-decoration: none;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+  will-change: transform;
+}
+.is-map .pin { opacity: 1; pointer-events: auto; transition-delay: 500ms; }
+.pin i { display: grid; place-items: center; width: 32px; height: 32px; background: var(--accent); color: var(--accent-ink); font-style: normal; font-weight: 600; transition: transform var(--t-ui) var(--ease-out); }
+.pin span { padding: 4px 8px; background: var(--bg); color: var(--ink); font-size: 0.875rem; white-space: nowrap; }
+.pin:hover i, .pin:focus-visible i { transform: scale(1.18); }
+
+/* Garage. */
+.drag { position: absolute; inset: 0; cursor: grab; touch-action: none; }
+.drag:active { cursor: grabbing; }
+.marker {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 44px;
+  height: 44px;
+  margin: -22px 0 0 -22px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  will-change: transform;
+}
+.marker::before { content: ''; width: 14px; height: 14px; background: var(--accent); outline: 3px solid var(--accent-ink); transform: rotate(45deg); transition: transform var(--t-ui) var(--ease-out), background-color var(--t-hover) ease; }
+.marker:hover::before, .marker.is-on::before { transform: rotate(45deg) scale(1.5); }
+.marker.is-seen::before { background: var(--ink); }
+.marker.is-on::before { background: var(--accent); }
+.pins.is-off .marker { opacity: 0; pointer-events: none; }
+.garage__tools { position: absolute; left: 12px; top: 12px; display: flex; gap: 4px; }
+.garage__tools button { min-height: 44px; padding: 0 14px; border: 0; background: var(--bg); color: var(--ink); cursor: pointer; font-weight: 500; }
+.garage__tools button[aria-pressed='true'] { background: var(--accent); color: var(--accent-ink); }
+
+/* Pit wall. */
+.card--pit { width: min(600px, calc(100vw - 24px)); }
+.corners { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.corners button { display: grid; gap: 2px; min-height: 64px; padding: 10px 12px; border: 0; background: var(--surface); text-align: left; cursor: pointer; transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-press) var(--ease-out); }
+.corners button:active { transform: scale(0.98); }
+.corners strong { font-family: var(--font-display); font-size: 1.75rem; font-weight: 400; line-height: 1; }
+.corners span { font-size: var(--step-small); }
+.corners button[aria-pressed='true'] { background: var(--accent); color: var(--accent-ink); }
+.scope { display: grid; gap: 10px; padding: 14px; background: #ffffff; color: #0b0c0e; font-variant-numeric: tabular-nums; }
+.scope__read { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 18px; align-items: end; }
+.scope__where { grid-column: 1 / -1; display: flex; justify-content: space-between; font-weight: 500; font-size: 0.9375rem; }
+.scope__where span + span { color: #4f4f4b; font-weight: 400; }
+.scope__apex { grid-column: 1 / -1; min-height: 1.5em; font-size: 0.9375rem; color: #2c2c29; }
+.scope__gap { display: flex; align-items: baseline; gap: 10px; }
+.scope__gap span:first-child { font-family: var(--font-display); font-size: clamp(2.5rem, 3.4vw, 3.25rem); line-height: 0.9; }
+.scope__gap span + span { font-size: 0.9375rem; }
+.scope__cars { display: contents; }
+.scope__cars div { font-size: 0.9375rem; text-align: right; }
+.scope__cars dt { font-weight: 600; }
+.is-ver dt { color: var(--ver); }
+.is-lec dt { color: var(--lec); }
+.scope__plot { position: relative; height: clamp(200px, 32svh, 300px); touch-action: pan-y; cursor: ew-resize; pointer-events: auto; }
+.scope__plot svg { position: absolute; left: 0; width: 100%; overflow: hidden; }
+.scope__plot .label { position: absolute; right: 0; font-size: 0.8125rem; color: #4f4f4b; pointer-events: none; }
+.scope__plot .cursor { position: absolute; top: 0; bottom: 0; width: 2px; background: #0b0c0e; pointer-events: none; }
+.scope__plot .corner { position: absolute; font-size: 0.8125rem; color: #4f4f4b; transform: translateX(-50%); pointer-events: none; }
+.scope__scrub { display: block; pointer-events: auto; }
+.scope input[type='range'] { width: 100%; height: 44px; margin: 0; background: none; accent-color: #0b0c0e; cursor: ew-resize; }
+.scope__jump { display: flex; flex-wrap: wrap; gap: 6px; }
+.scope__jump button { min-height: 44px; padding: 0 12px; border: 1px solid #0b0c0e; /* taste-skill-ignore */ background: #ffffff; color: #0b0c0e; font-size: 0.9375rem; font-weight: 500; cursor: pointer; }
+.scope__jump button[aria-pressed='true'] { background: #0b0c0e; color: var(--accent); }
+
+/* A quick dip to dark, for moves that can't be shown. */
+html.js .blink { position: fixed; z-index: 3; inset: 0; background: #050810; opacity: 0; pointer-events: none; transition: opacity 170ms ease; }
+html.js .blink.is-on { opacity: 1; transition-duration: 150ms; }
+.blink { display: none; }
+html.js .blink { display: block; }
+
+/* Team radio. */
+.radio {
+  position: absolute !important;
+  top: 12px;
+  left: 12px;
+  bottom: 12px;
+  right: auto !important;
+  width: min(620px, calc(100vw - 24px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding: clamp(24px, 4vw, 56px);
+  overflow: auto;
+  background: var(--accent);
+  color: var(--accent-ink);
+  pointer-events: auto;
+}
+.radio__head { font-family: var(--font-display); font-size: var(--step-display); font-weight: 400; line-height: 0.86; text-transform: uppercase; }
+.radio__prompt { font-size: var(--step-lead); font-weight: 500; line-height: 1.25; }
+.radio__prompt span { display: block; }
+.field { position: relative; }
+.field input { width: 100%; height: 64px; padding: 0 64px 0 20px; border: 0; background: #ffffff; color: #0b0c0e; font: inherit; }
+.field input::placeholder { color: #55554f; }
+.field input:focus-visible { outline: 3px solid var(--accent-ink); outline-offset: -3px; }
+.field button { position: absolute; right: 10px; top: 10px; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 0; background: var(--accent-ink); color: var(--accent); cursor: pointer; transition: transform var(--t-press) var(--ease-out); }
+.field button:active { transform: scale(0.94); }
+.field button svg { width: 22px; height: 22px; fill: currentColor; }
+.radio__note { font-size: var(--step-small); }
+.radio__reach { display: grid; gap: 6px; margin-top: 12px; }
+.radio__reach div { display: flex; gap: 16px; }
+.radio__reach dt { width: 7.5rem; flex: none; font-weight: 500; }
+
+/* The CV as a panel over everything. */
+html.js .cv {
+  position: fixed;
+  z-index: 7;
+  inset: var(--draft) 0 0 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  transform: translateY(102%);
+  visibility: hidden;
+  transition: transform 560ms var(--ease-expo), visibility 0s 560ms;
+}
+html.js .cv.is-open { transform: none; visibility: visible; transition: transform 560ms var(--ease-expo); }
+html.js .cv__close { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; background: var(--accent); color: var(--accent-ink); font-weight: 500; text-decoration: none; }
+
+@media (hover: hover) and (pointer: fine) {
+  html.js .menu__item:hover { background: var(--accent-ink); color: var(--accent); }
+  .bar a:hover, .bar button:hover { background: rgb(11 12 14 / 0.1); }
+  .bar__back:hover { background: #24262b !important; }
+  .card__nav button:hover, .button-link:hover { background: #24262b; }
+  .card__nav [data-go='1']:hover, .button-link--main:hover { background: #ffe352; }
+  .jumps a:hover { background: #24262b; transform: translateX(4px); }
+  .corners button:hover { background: #24262b; }
+  .corners button[aria-pressed='true']:hover { background: var(--accent); }
+  .tabs button:not([aria-selected='true']):hover { background: #24262b; }
+  .tower a:hover { transform: translateX(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.js .board, .card, .card.is-in, .card.is-in > *, .wipe.is-in, .wipe.is-out, html.js .cv, html.js .cv.is-open { transition: none; animation: none; transform: none; }
+  html.js .board.is-away { transform: translateX(-101%); }
+  html.js .cv { transform: translateY(102%); }
+  html.js .cv.is-open { transform: none; }
+}
+
+/* Phones and small tablets: the board and the cards rise from the bottom instead. */
+@media (max-width: 860px) {
+  html.js .poster { width: 100vw; height: 42svh; inset: 0 0 auto 0; }
+  html.js .board { inset: auto 0 0 0; width: auto; height: 60svh; padding: 16px 20px; }
+  html.js .board.is-away { transform: translateY(101%); }
+  html.js .board .lead { display: none; }
+  html.js .title__does { font-size: clamp(1.625rem, 7vw, 2.75rem); margin-top: 4px; }
+  html.js .menu { margin-top: 6px; }
+  html.js .menu__item { padding: 3px 12px 4px; margin-inline: -12px; }
+  html.js .menu__name { font-size: clamp(1.875rem, 8.4vw, 3rem); }
+  html.js .menu__note { display: none; }
+  .board__foot { margin-top: 8px; }
+
+  .bar__title { display: none; }
+  html.js { --bar: 48px; }
+  html.js .bar:not([hidden]) { height: var(--bar); padding: 0 8px; }
+
+  .card { inset: auto 0 0 0; width: auto; max-height: 62svh; padding: 18px 20px max(18px, env(safe-area-inset-bottom)); transform: translateY(24px); }
+  .card--pit { max-height: 74svh; }
+  .card--part { max-height: 44svh; }
+  .tower { display: flex; gap: 2px; width: auto; right: 0; left: 0; top: 0; overflow-x: auto; scrollbar-width: none; padding: 6px 8px; }
+  .tower li { flex: none; }
+  .tower a { min-height: 32px; font-size: 0.8125rem; padding: 0 8px; }
+  .tower a span + span { display: none; }
+  .tower a span:first-of-type { margin-left: 0; }
+  .tower a.is-seen::before { margin-right: 6px; }
+
+  .pin span { display: none; }
+  .facts { grid-template-columns: 1fr 1fr; }
+  .garage__tools { top: 8px; left: 8px; }
+
+  .radio { top: auto !important; left: 0; bottom: 0; right: 0 !important; width: auto; height: 68svh; padding: 20px 20px max(20px, env(safe-area-inset-bottom)); }
+
+  .card__nav { bottom: -18px; margin-bottom: -18px; padding-block: 4px 18px; }
+}
+
+/* The board arrives once, on load, in reading order. */
+@media (prefers-reduced-motion: no-preference) {
+  html.js .title__name, html.js .title__does, html.js .board .lead, html.js .menu__item, html.js .board__foot {
+    animation: board-in 760ms var(--ease-expo) both;
+  }
+  html.js .title__does { animation-delay: 70ms; }
+  html.js .board .lead { animation-delay: 130ms; }
+  html.js .menu__item:nth-child(1) { animation-delay: 190ms; }
+  html.js .menu__item:nth-child(2) { animation-delay: 240ms; }
+  html.js .menu__item:nth-child(3) { animation-delay: 290ms; }
+  html.js .menu__item:nth-child(4) { animation-delay: 340ms; }
+  html.js .menu__item:nth-child(5) { animation-delay: 390ms; }
+  html.js .board__foot { animation-delay: 440ms; }
+}
+@keyframes board-in { from { opacity: 0; transform: translateX(-24px); } }
+
+/* Only the review copy carries this. It stays on screen in every mode, so a forwarded link explains itself. */
+.draft {
+  position: fixed;
+  z-index: 9;
+  top: var(--bar, 0);
+  left: 50%;
+  width: max-content;
+  max-width: calc(100vw - 16px);
+  padding: 4px 12px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: var(--step-small);
+  font-weight: 500;
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+/* With the 3D running it gets a strip of its own: across the scene on the menu, under the bar in a section,
+   above the CV. Sections and the CV start below it, so it never covers anything. */
+html.js:has(.draft) { --draft: 26px; }
+html.js .draft {
+  inset: 0 0 auto var(--board);
+  width: auto;
+  max-width: none;
+  min-height: var(--draft);
+  display: grid;
+  place-items: center;
+  line-height: 1.25;
+  text-wrap: balance;
+  transform: none;
+}
+html.js:has(#bar:not([hidden])) .draft { top: var(--bar); left: 0; }
+html.js:has(#cv.is-open) .draft { top: 0; left: 0; }
+@media (max-width: 860px) {
+  html.js:has(.draft) { --draft: 42px; }
+  html.js .draft { left: 0; }
+}
+
+/* Leave a clear line at the foot of every panel for the floating key prompts (Q E Tabs, Esc Menu).
+   They only show on devices with a pointer, so touch screens keep the space. */
+@media (hover: hover) {
+  html.js .cv::after { content: ''; display: block; height: 56px; }
+  .radio { padding-bottom: 56px; }
+  @media (max-width: 860px) {
+    .card { padding-bottom: 56px; }
+    .card__nav { bottom: -56px; margin-bottom: -56px; padding-block: 4px 56px; }
+    .radio { padding-bottom: 56px; }
+    html.js .board { padding-bottom: 56px; overflow-y: auto; }
+  }
+}

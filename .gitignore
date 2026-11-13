@@ -1,0 +1,9 @@
+node_modules/
+dist/
+dist-draft/
+.wrangler/
+.taste-skill/
+data-raw/
+
+# LinkedIn export: holds Eugene's phone number, keep it out of any public repo
+Profile.pdf
