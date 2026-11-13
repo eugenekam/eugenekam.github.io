@@ -5,5 +5,4 @@ dist-draft/
 .taste-skill/
 data-raw/
 
-# LinkedIn export: holds Eugene's phone number, keep it out of any public repo
 Profile.pdf
