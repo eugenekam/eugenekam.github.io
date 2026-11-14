@@ -17,6 +17,8 @@ const draftLabel = () => ({
 });
 
 export default defineConfig(({ mode }) => ({
+  // Relative paths, so the site works at a domain root and under a sub-folder like user.github.io/portfolio/.
+  base: './',
   plugins: mode === 'draft' ? [draftLabel()] : [],
   build: { outDir: mode === 'draft' ? 'dist-draft' : 'dist' },
 }));
