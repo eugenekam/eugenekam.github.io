@@ -27,7 +27,7 @@ async function boot() {
   // Without WebGL the page stays as it arrives: the title, the menu and the full CV.
   if (!test.getContext('webgl2')) return;
 
-  const lap = await fetch('/data/lap.json').then((r) => r.json());
+  const lap = await fetch(`${import.meta.env.BASE_URL}data/lap.json`).then((r) => r.json());
   const phone = matchMedia('(max-width: 860px)').matches;
 
   const [{ Stage, HERO_INDEX }, { App }] = await Promise.all([
@@ -40,7 +40,7 @@ async function boot() {
   const stage = new Stage(document.getElementById('scene'), lap, { phone });
   stage.heroIndex = HERO_INDEX;
   stage.setStill(stillMode);
-  await stage.loadCity('/data/city.bin');
+  await stage.loadCity(`${import.meta.env.BASE_URL}data/city.bin`);
 
   const app = new App({ stage, lap, phone, calm: () => stillMode });
   stage.start((dt, time) => app.update(dt, time));
